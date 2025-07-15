@@ -1,0 +1,26 @@
+LEGAL CORRESPONDENCE TRACKING INFORMATION
+==================================================
+
+Date Created: 2025-07-13 11:17:33
+Case Number: 2025CF000089
+Document Type: Discovery Correspondence
+
+Encryption Key: ioarP4JdASrV8qMBoQz2MtTJrk7Qy4cyZTArJg9sWs8=
+Tracking URL: https://realproductpat.com/track/open/gAAAAABoc9wd5aVw60HVlSu7_gTWX7OUeMJ0gMnUF9-TVfii0eVyRXKq1zhjEk_rvinLexwquiJN6M6wVKL8DpT6Sa7oqbArFkvNQ5HvsflbFw6GUwPgjUtuUtUNCsgD2d0pS6M8Ea7A1fOdTmZJ-MI4QJ3nC07Apyc5oa1XXypzkyAWKRUMefE1jn16ki0h-MVEpUG3SVWtahUKjiwcb4CQweL6VCR0zlaN_uDMDbTiiQDS4xt3OB3Z5jpTkoO8mOnQAaay8xkKN6QJgH6oAEp-h0HErdkN4_J4cpBLURX32NkhtWOc5OafoPJpFXifXncby4UnxGaEkGLkTvus_PiN0NSrxamgAZ0pY16RwSmALF7VhZCIhN8y9yaOjWdIe_mwOqdFViOdVrUXiFEHHV9gxmokKLOsnf7S7fYMf3tg8WRHs-VpfIDeDrNWmhih92J-XtHWmc1125_SLRmc02T_SHNg9W3fZFYzpakHjDgyXT3BveoWdISF82FwcN4UftFj-VPQCuDl9DDDJdyl2xFOki_b0qj4o4Jhqsw7s-4vosPezB-hpsMNyDWou0m3bVUe_ZUXK0CbKmFHewl-mcZtOTS6lcuSj1T0rRgZ595qmUdt6pAAqjZubMkxt_QzijB_b2Q7QXAV
+
+METADATA:
+  recipient: matthew.kirkpatrick@piercecounty.gov
+  sender: james.patrick.white@example.com
+  document_id: legal_001
+  case_name: State v. White
+  case_number: 2025CF000089
+  document_type: discovery_correspondence
+  date_created: 2025-07-13T11:17:33.728180
+  priority: urgent
+  deadline: 72_hours
+  legal_category: discovery_demand
+  subject_matter: toxicology_evidence_challenge
+
+Webhook URL: https://realproductpat.com/webhooks/legal-tracking/
+Open Tracking URL: https://realproductpat.com/track/open/
+Click Tracking URL: https://realproductpat.com/track/click/

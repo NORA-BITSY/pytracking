@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  pytracking:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      - PYTRACKING_ENCRYPTION_KEY=ioarP4JdASrV8qMBoQz2MtTJrk7Qy4cyZTArJg9sWs8=
+      - PYTRACKING_DB_PATH=/app/data/tracking.db
+      - WEBHOOK_SECRET=your-webhook-secret-change-this
+      - ALLOWED_DOMAINS=realproductpat.com
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/ssl/certs:ro
+    depends_on:
+      - pytracking
+    restart: unless-stopped
+
+  # Optional: Database backup service
+  backup:
+    image: alpine:latest
+    volumes:
+      - ./data:/app/data:ro
+      - ./backups:/backups
+    environment:
+      - BACKUP_SCHEDULE=0 2 * * *  # Daily at 2 AM
+    command: |
+      sh -c '
+        apk add --no-cache dcron
+        echo "0 2 * * * cp /app/data/tracking.db /backups/tracking_$(date +%Y%m%d_%H%M%S).db" | crontab -
+        echo "0 3 * * * find /backups -name "tracking_*.db" -mtime +7 -delete" | crontab -
+        crond -f
+      '
+    restart: unless-stopped

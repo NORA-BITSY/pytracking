@@ -1,0 +1,23 @@
+# PyTracking Server Requirements
+# Install with: pip install -r requirements_server.txt
+
+# Core PyTracking with all features
+pytracking[all]
+
+# Web framework
+Flask==2.3.3
+gunicorn==21.2.0
+
+# Database
+psycopg2-binary==2.9.7
+
+# Environment management
+python-dotenv==1.0.0
+
+# Additional utilities
+requests==2.31.0
+cryptography>=41.0.0
+
+# Optional: For advanced features
+# redis==4.5.4  # For caching
+# celery==5.3.1  # For background tasks
