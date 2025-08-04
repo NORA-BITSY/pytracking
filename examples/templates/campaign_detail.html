@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+
+{% block title %}{{ campaign.name }} - Campaign Details{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2"><i class="fas fa-bullhorn"></i> {{ campaign.name }}</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <a href="{{ url_for('campaigns') }}" class="btn btn-sm btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Campaigns
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Campaign Info -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Campaign Information</h5>
+                {% if campaign.subject %}
+                <p><strong>Subject:</strong> {{ campaign.subject }}</p>
+                {% endif %}
+                <p><strong>Created:</strong> {{ campaign.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+                <p><strong>Emails Sent:</strong> {{ emails|length }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Statistics -->
+<div class="row mb-4">
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="stat-card">
+            <h3>{{ emails|length }}</h3>
+            <p class="mb-0">Total Emails</p>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+            <h3>{{ opens }}</h3>
+            <p class="mb-0">Opens</p>
+            <small>{{ "%.1f"|format(open_rate) }}% rate</small>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+            <h3>{{ clicks }}</h3>
+            <p class="mb-0">Clicks</p>
+            <small>{{ "%.1f"|format(click_rate) }}% rate</small>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+            <h3>{{ emails|selectattr('opened', 'equalto', true)|list|length }}</h3>
+            <p class="mb-0">Unique Opens</p>
+            <small>{{ "%.1f"|format((emails|selectattr('opened', 'equalto', true)|list|length / emails|length * 100) if emails|length > 0 else 0) }}% rate</small>
+        </div>
+    </div>
+</div>
+
+<!-- Charts -->
+<div class="row mb-4">
+    <div class="col-lg-8">
+        <div class="chart-container">
+            <h4><i class="fas fa-chart-line"></i> Activity Timeline</h4>
+            <canvas id="timelineChart" height="100"></canvas>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="chart-container">
+            <h4><i class="fas fa-chart-pie"></i> Event Distribution</h4>
+            <canvas id="pieChart" height="100"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Email List -->
+<div class="row">
+    <div class="col-12">
+        <div class="chart-container">
+            <h4><i class="fas fa-envelope"></i> Email Recipients</h4>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Recipient</th>
+                            <th>Sent</th>
+                            <th>Status</th>
+                            <th>Opens</th>
+                            <th>Clicks</th>
+                            <th>Last Activity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for email in emails %}
+                        <tr>
+                            <td>
+                                {% if email.recipient_name %}
+                                    <strong>{{ email.recipient_name }}</strong><br>
+                                {% endif %}
+                                <small class="text-muted">{{ email.recipient_email }}</small>
+                            </td>
+                            <td>{{ email.sent_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                            <td>
+                                {% if email.opened %}
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-envelope-open"></i> Opened
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-secondary">
+                                        <i class="fas fa-envelope"></i> Sent
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% set open_count = email.events|selectattr('event_type', 'equalto', 'open')|list|length %}
+                                {{ open_count }}
+                                {% if email.first_opened_at %}
+                                    <br><small class="text-muted">First: {{ email.first_opened_at.strftime('%m/%d %H:%M') }}</small>
+                                {% endif %}
+                            </td>
+                            <td>{{ email.clicks }}</td>
+                            <td>
+                                {% set last_event = email.events|sort(attribute='timestamp', reverse=True)|first %}
+                                {% if last_event %}
+                                    {{ last_event.timestamp.strftime('%Y-%m-%d %H:%M') }}
+                                    <br><small class="text-muted">{{ last_event.event_type }}</small>
+                                {% else %}
+                                    <span class="text-muted">No activity</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Load campaign statistics and create charts
+fetch(`/api/campaigns/{{ campaign.id }}/stats`)
+    .then(response => response.json())
+    .then(data => {
+        // Timeline Chart
+        const timelineCtx = document.getElementById('timelineChart').getContext('2d');
+        const dates = data.daily_opens.map(d => d.date);
+        const opens = data.daily_opens.map(d => d.count);
+        const clicks = data.daily_clicks.map(d => d.count);
+        
+        new Chart(timelineCtx, {
+            type: 'line',
+            data: {
+                labels: dates,
+                datasets: [{
+                    label: 'Opens',
+                    data: opens,
+                    borderColor: 'rgb(75, 192, 192)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    tension: 0.1
+                }, {
+                    label: 'Clicks',
+                    data: clicks,
+                    borderColor: 'rgb(255, 99, 132)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+        
+        // Pie Chart
+        const pieCtx = document.getElementById('pieChart').getContext('2d');
+        const totalOpens = opens.reduce((a, b) => a + b, 0);
+        const totalClicks = clicks.reduce((a, b) => a + b, 0);
+        
+        new Chart(pieCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Opens', 'Clicks'],
+                datasets: [{
+                    data: [totalOpens, totalClicks],
+                    backgroundColor: [
+                        'rgba(75, 192, 192, 0.8)',
+                        'rgba(255, 99, 132, 0.8)'
+                    ],
+                    borderColor: [
+                        'rgb(75, 192, 192)',
+                        'rgb(255, 99, 132)'
+                    ],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    })
+    .catch(error => {
+        console.error('Error loading campaign stats:', error);
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,226 @@
+{% extends "base.html" %}
+
+{% block title %}Email Preview - Email Tracking System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2"><i class="fas fa-envelope"></i> Email Preview</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <button class="btn btn-sm btn-outline-primary" onclick="copyTrackingInfo()">
+                <i class="fas fa-copy"></i> Copy Tracking URLs
+            </button>
+        </div>
+    </div>
+</div>
+
+{% if message %}
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+    <i class="fas fa-check-circle"></i> {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+{% endif %}
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-eye"></i> Email Preview</h5>
+            </div>
+            <div class="card-body">
+                <div class="border p-3" style="background-color: #f8f9fa;">
+                    <div class="mb-3">
+                        <strong>To:</strong> {{ email.recipient_email }}<br>
+                        <strong>From:</strong> noreply@yoursite.com<br>
+                        <strong>Subject:</strong> Test Email with Tracking<br>
+                        <strong>Campaign:</strong> {{ email.campaign.name }}
+                    </div>
+                    <hr>
+                    <div id="emailContent">
+                        {{ html_content|safe }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-info-circle"></i> Email Details</h5>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-5">Email ID:</dt>
+                    <dd class="col-sm-7">{{ email.id }}</dd>
+                    
+                    <dt class="col-sm-5">Campaign:</dt>
+                    <dd class="col-sm-7">
+                        <a href="{{ url_for('campaign_detail', campaign_id=email.campaign_id) }}">
+                            {{ email.campaign.name }}
+                        </a>
+                    </dd>
+                    
+                    <dt class="col-sm-5">Recipient:</dt>
+                    <dd class="col-sm-7">{{ email.recipient_email }}</dd>
+                    
+                    <dt class="col-sm-5">Created:</dt>
+                    <dd class="col-sm-7">{{ email.sent_at.strftime('%Y-%m-%d %H:%M') }}</dd>
+                </dl>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-link"></i> Tracking Information</h5>
+            </div>
+            <div class="card-body">
+                <h6>How to Test Tracking:</h6>
+                <ol class="small">
+                    <li>Copy the HTML content below</li>
+                    <li>Save it as an HTML file</li>
+                    <li>Open in a web browser</li>
+                    <li>Click on the links to test click tracking</li>
+                    <li>Check the dashboard for tracking events</li>
+                </ol>
+                
+                <h6 class="mt-3">Tracking Features Enabled:</h6>
+                <ul class="small">
+                    <li><i class="fas fa-check text-success"></i> Open tracking pixel</li>
+                    <li><i class="fas fa-check text-success"></i> Click tracking on all links</li>
+                    <li><i class="fas fa-check text-success"></i> Encrypted tracking URLs</li>
+                    <li><i class="fas fa-check text-success"></i> Real-time analytics</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-code"></i> Raw HTML</h5>
+            </div>
+            <div class="card-body">
+                <textarea class="form-control" id="htmlSource" rows="8" readonly>{{ html_content }}</textarea>
+                <button class="btn btn-sm btn-outline-primary mt-2" onclick="copyHtml()">
+                    <i class="fas fa-copy"></i> Copy HTML
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-terminal"></i> Next Steps</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h6><i class="fas fa-paper-plane"></i> Send Real Emails</h6>
+                        <p class="small">
+                            Integrate with an email service provider to actually send emails. 
+                            See the integration examples in the documentation.
+                        </p>
+                    </div>
+                    <div class="col-md-4">
+                        <h6><i class="fas fa-chart-line"></i> Monitor Analytics</h6>
+                        <p class="small">
+                            Visit the dashboard to see real-time tracking data. 
+                            Click tracking and open events will appear automatically.
+                        </p>
+                    </div>
+                    <div class="col-md-4">
+                        <h6><i class="fas fa-cogs"></i> Customize Tracking</h6>
+                        <p class="small">
+                            Modify the tracking configuration to add custom metadata, 
+                            webhooks, or different tracking URLs.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="mt-3">
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-primary">
+                        <i class="fas fa-tachometer-alt"></i> View Dashboard
+                    </a>
+                    <a href="{{ url_for('send_test_email') }}" class="btn btn-secondary">
+                        <i class="fas fa-paper-plane"></i> Send Another Test
+                    </a>
+                    <a href="{{ url_for('campaign_detail', campaign_id=email.campaign_id) }}" class="btn btn-info">
+                        <i class="fas fa-eye"></i> View Campaign
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function copyHtml() {
+    const htmlSource = document.getElementById('htmlSource');
+    htmlSource.select();
+    htmlSource.setSelectionRange(0, 99999);
+    navigator.clipboard.writeText(htmlSource.value).then(() => {
+        showToast('HTML copied to clipboard!');
+    });
+}
+
+function copyTrackingInfo() {
+    const emailContent = document.getElementById('emailContent').innerHTML;
+    const trackingInfo = `Email ID: {{ email.id }}
+Campaign: {{ email.campaign.name }}
+Recipient: {{ email.recipient_email }}
+Created: {{ email.sent_at.strftime('%Y-%m-%d %H:%M') }}
+
+HTML Content:
+${emailContent}`;
+    
+    navigator.clipboard.writeText(trackingInfo).then(() => {
+        showToast('Tracking information copied to clipboard!');
+    });
+}
+
+function showToast(message) {
+    // Simple toast notification
+    const toast = document.createElement('div');
+    toast.className = 'toast position-fixed top-0 end-0 m-3';
+    toast.setAttribute('role', 'alert');
+    toast.innerHTML = `
+        <div class="toast-header">
+            <strong class="me-auto">Success</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+        </div>
+        <div class="toast-body">${message}</div>
+    `;
+    document.body.appendChild(toast);
+    
+    const bsToast = new bootstrap.Toast(toast);
+    bsToast.show();
+    
+    // Remove toast after it's hidden
+    toast.addEventListener('hidden.bs.toast', () => {
+        document.body.removeChild(toast);
+    });
+}
+
+// Auto-highlight tracking links for demonstration
+document.addEventListener('DOMContentLoaded', function() {
+    const emailContent = document.getElementById('emailContent');
+    const links = emailContent.querySelectorAll('a[href*="/track/"]');
+    links.forEach(link => {
+        link.style.backgroundColor = '#ffeb3b';
+        link.style.padding = '2px 4px';
+        link.style.borderRadius = '3px';
+        link.title = 'This is a tracking link';
+    });
+    
+    const pixel = emailContent.querySelector('img[src*="/track/open/"]');
+    if (pixel) {
+        pixel.style.border = '2px dashed #f44336';
+        pixel.title = 'This is the tracking pixel';
+    }
+});
+</script>
+{% endblock %}

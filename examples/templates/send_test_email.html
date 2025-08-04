@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block title %}Send Test Email - Email Tracking System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2"><i class="fas fa-paper-plane"></i> Send Test Email</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <a href="{{ url_for('dashboard') }}" class="btn btn-sm btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Test Email Configuration</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="campaign_id" class="form-label">Select Campaign *</label>
+                        <select class="form-select" id="campaign_id" name="campaign_id" required>
+                            <option value="">Choose a campaign...</option>
+                            {% for campaign in campaigns %}
+                            <option value="{{ campaign.id }}">{{ campaign.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <div class="form-text">
+                            The campaign to associate this test email with. 
+                            <a href="{{ url_for('create_campaign') }}">Create a new campaign</a> if needed.
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="recipient" class="form-label">Recipient Email *</label>
+                        <input type="email" class="form-control" id="recipient" name="recipient" required 
+                               placeholder="test@example.com">
+                        <div class="form-text">Enter the email address where you want to send the test</div>
+                    </div>
+                    
+                    <div class="alert alert-warning">
+                        <h6><i class="fas fa-exclamation-triangle"></i> Demo Mode</h6>
+                        <p class="mb-0">
+                            This is a demo application. The email will be prepared with tracking links 
+                            but not actually sent. In a real application, you would integrate with an 
+                            email service provider (ESP) like SendGrid, Mailgun, or Amazon SES.
+                        </p>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i> Prepare Test Email
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-info-circle"></i> About Test Emails</h5>
+            </div>
+            <div class="card-body">
+                <h6>What gets tracked?</h6>
+                <ul class="small">
+                    <li><strong>Email Opens:</strong> 1x1 pixel tracking</li>
+                    <li><strong>Link Clicks:</strong> All HTTP/HTTPS links</li>
+                    <li><strong>User Data:</strong> IP address, user agent</li>
+                    <li><strong>Timestamps:</strong> When events occurred</li>
+                </ul>
+                
+                <h6 class="mt-3">Security Features</h6>
+                <ul class="small">
+                    <li>Encrypted tracking URLs</li>
+                    <li>Secure metadata encoding</li>
+                    <li>No sensitive data in URLs</li>
+                </ul>
+                
+                <h6 class="mt-3">Integration</h6>
+                <p class="small">
+                    To actually send emails, integrate with your preferred ESP:
+                </p>
+                <ul class="small">
+                    <li>SendGrid</li>
+                    <li>Mailgun</li>
+                    <li>Amazon SES</li>
+                    <li>Postmark</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-code"></i> Sample Integration</h5>
+            </div>
+            <div class="card-body">
+                <pre class="small"><code># Python with SendGrid
+import sendgrid
+from sendgrid.helpers.mail import Mail
+
+# Prepare tracked email
+email_obj, html_content = tracking_service.prepare_email(
+    html_template, recipient, campaign_id
+)
+
+# Send with SendGrid
+message = Mail(
+    from_email='noreply@yoursite.com',
+    to_emails=recipient,
+    subject='Your Subject',
+    html_content=html_content
+)
+
+sg = sendgrid.SendGridAPIClient(api_key=os.environ.get('SENDGRID_API_KEY'))
+response = sg.send(message)</code></pre>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Auto-fill with current user's email for testing
+document.addEventListener('DOMContentLoaded', function() {
+    const recipientField = document.getElementById('recipient');
+    // You could auto-fill with a test email or user's email here
+    // recipientField.value = 'your-test@email.com';
+});
+</script>
+{% endblock %}

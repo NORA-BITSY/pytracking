@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}Create Campaign - Email Tracking System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2"><i class="fas fa-plus"></i> Create New Campaign</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <a href="{{ url_for('campaigns') }}" class="btn btn-sm btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Campaigns
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Campaign Details</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Campaign Name *</label>
+                        <input type="text" class="form-control" id="name" name="name" required 
+                               placeholder="e.g., Newsletter March 2024">
+                        <div class="form-text">Choose a descriptive name for your campaign</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="subject" class="form-label">Email Subject</label>
+                        <input type="text" class="form-control" id="subject" name="subject" 
+                               placeholder="e.g., Welcome to our newsletter!">
+                        <div class="form-text">Optional: The subject line for emails in this campaign</div>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <h6><i class="fas fa-info-circle"></i> What happens next?</h6>
+                        <ul class="mb-0">
+                            <li>Your campaign will be created and assigned a unique ID</li>
+                            <li>You can then send tracked emails using this campaign</li>
+                            <li>All tracking data will be associated with this campaign</li>
+                            <li>You'll be able to view detailed analytics and reports</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('campaigns') }}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Create Campaign
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row justify-content-center mt-4">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-lightbulb"></i> Campaign Tips</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-tag"></i> Naming Best Practices</h6>
+                        <ul class="small">
+                            <li>Include the date or time period</li>
+                            <li>Mention the campaign type (newsletter, promo, etc.)</li>
+                            <li>Keep it descriptive but concise</li>
+                            <li>Use consistent naming conventions</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-chart-line"></i> Tracking Features</h6>
+                        <ul class="small">
+                            <li>Automatic open and click tracking</li>
+                            <li>Real-time analytics dashboard</li>
+                            <li>Individual recipient tracking</li>
+                            <li>Encrypted tracking URLs for security</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Auto-generate campaign name based on current date
+document.addEventListener('DOMContentLoaded', function() {
+    const nameField = document.getElementById('name');
+    if (!nameField.value) {
+        const now = new Date();
+        const monthNames = ["January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"];
+        const suggestedName = `Campaign ${monthNames[now.getMonth()]} ${now.getFullYear()}`;
+        nameField.placeholder = `e.g., ${suggestedName}`;
+    }
+});
+</script>
+{% endblock %}

@@ -7,3 +7,5 @@
 .tox/
 dist/
 cache/
+venv/
+__pycache__/
